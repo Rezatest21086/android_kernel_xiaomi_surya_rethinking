@@ -18,6 +18,26 @@ if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
 	DATE="$2"
 else
 	DATE="$(TZ=Asia/Jakarta date +%Y%m%d%H%M)"
+#!/bin/bash
+SECONDS=0
+set -eo pipefail
+
+# Set kernel path
+KERNEL_PATH="out/arch/arm64/boot"
+
+# Set kernel file
+OBJ="${KERNEL_PATH}/Image"
+GZIP="${KERNEL_PATH}/Image.gz"
+
+# Set dts file
+DTB="${KERNEL_PATH}/dtb.img"
+DTBO="${KERNEL_PATH}/dtbo.img"
+
+# Set date kernel
+if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
+	DATE="$2"
+else
+	DATE="$(TZ=Asia/Jakarta date +%Y%m%d%H%M)"
 fi
 
 # Set defconfig path
@@ -41,6 +61,9 @@ case "$1" in
 		set_cfg CONFIG_KSU n ;;
 	*) echo "Unknown root: $1"; exit 1 ;;
 esac
+
+# ========== FIX: Aktifkan KALLSYMS_ALL untuk KSU (non-GKI) ==========
+set_cfg CONFIG_KALLSYMS_ALL y
 
 # Kernel Compiler
 function KERNEL_COMPILE() {
