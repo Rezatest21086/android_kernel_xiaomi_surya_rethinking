@@ -18,26 +18,6 @@ if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
 	DATE="$2"
 else
 	DATE="$(TZ=Asia/Jakarta date +%Y%m%d%H%M)"
-#!/bin/bash
-SECONDS=0
-set -eo pipefail
-
-# Set kernel path
-KERNEL_PATH="out/arch/arm64/boot"
-
-# Set kernel file
-OBJ="${KERNEL_PATH}/Image"
-GZIP="${KERNEL_PATH}/Image.gz"
-
-# Set dts file
-DTB="${KERNEL_PATH}/dtb.img"
-DTBO="${KERNEL_PATH}/dtbo.img"
-
-# Set date kernel
-if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
-	DATE="$2"
-else
-	DATE="$(TZ=Asia/Jakarta date +%Y%m%d%H%M)"
 fi
 
 # Set defconfig path
@@ -62,7 +42,8 @@ case "$1" in
 	*) echo "Unknown root: $1"; exit 1 ;;
 esac
 
-# ========== FIX: Aktifkan KALLSYMS_ALL untuk KSU (non-GKI) ==========
+# Required so patch_linux/kptools (Embed KPM in APatch / KernelSU-Next manager)
+# can resolve non-exported kernel symbols when patching the boot image.
 set_cfg CONFIG_KALLSYMS_ALL y
 
 # Kernel Compiler
