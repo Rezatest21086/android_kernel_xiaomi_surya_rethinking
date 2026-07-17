@@ -44,6 +44,8 @@ esac
 
 # Required so patch_linux/kptools (Embed KPM in APatch / KernelSU-Next manager)
 # can resolve non-exported kernel symbols when patching the boot image.
+# CONFIG_KALLSYMS_ALL depends on CONFIG_DEBUG_KERNEL, so both must be enabled.
+set_cfg CONFIG_DEBUG_KERNEL y
 set_cfg CONFIG_KALLSYMS_ALL y
 
 # Kernel Compiler
