@@ -29,8 +29,17 @@ KERNEL_NAME="rethinking-$1-$DATE.zip"
 # Simple sed function
 set_cfg() {
 	local key="$1"; local val="$2"
-	if [ "$val" = "y" ]; then sed -i "s/^# $key is not set/$key=y/; s/^$key=.*/$key=y/" "$DEFCONFIG"
-	else sed -i "s/^$key=.*/# $key is not set/" "$DEFCONFIG"; fi
+	if [ "$val" = "y" ]; then
+		if grep -q "^# $key is not set" "$DEFCONFIG" || grep -q "^$key=" "$DEFCONFIG"; then
+			sed -i "s/^# $key is not set/$key=y/; s/^$key=.*/$key=y/" "$DEFCONFIG"
+		else
+			echo "$key=y" >> "$DEFCONFIG"
+		fi
+	else
+		if grep -q "^$key=" "$DEFCONFIG"; then
+			sed -i "s/^$key=.*/# $key is not set/" "$DEFCONFIG"
+		fi
+	fi
 }
 
 # Setup Root
